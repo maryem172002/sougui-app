@@ -7,334 +7,132 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  :root {
-    --navy: #0d1b3e;
-    --navy2: #112250;
-    --blue: #1a3a6b;
-    --accent: #f47c20;
-    --accent2: #f9a94b;
-    --teal: #00c8b4;
-    --red: #e74c3c;
-    --green: #27ae60;
-    --text: #e8eaf6;
-    --muted: #8fa0c0;
-    --card: rgba(255,255,255,0.04);
-    --border: rgba(255,255,255,0.08);
-  }
+:root {
+  --navy:#0d1b3e; --navy2:#112250; --blue:#1a3a6b;
+  --accent:#f47c20; --accent2:#f9a94b; --teal:#00c8b4;
+  --red:#e74c3c; --green:#27ae60;
+  --text:#e8eaf6; --muted:#8fa0c0;
+  --card:rgba(255,255,255,0.04); --border:rgba(255,255,255,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--navy);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;}
+.sidebar{width:200px;background:var(--navy2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 0;position:fixed;height:100vh;z-index:100;}
+.logo{padding:0 20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.logo-icon{width:34px;height:34px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:#fff;}
+.logo-sub{font-size:10px;color:var(--muted);}
+.nav{padding:16px 0;flex:1;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s;border-left:3px solid transparent;}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.04);}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(244,124,32,0.08);}
+.nav-item .icon{font-size:16px;width:20px;text-align:center;}
+.main{margin-left:200px;flex:1;display:flex;flex-direction:column;}
+.topbar{background:var(--navy2);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.topbar h1{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:.5px;}
+.filters{display:flex;gap:10px;}
+.filter-select{background:var(--card);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:12px;padding:5px 10px;cursor:pointer;font-family:'DM Sans',sans-serif;appearance:none;}
+.user-badge{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px 5px 5px;}
+.avatar{width:26px;height:26px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.user-badge span{font-size:12px;}
+.content{padding:20px 24px;flex:1;overflow-y:auto;}
+.page{display:none;}
+.page.active{display:block;}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.kpi-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;position:relative;overflow:hidden;}
+.kpi-card::after{content:'';position:absolute;right:-10px;bottom:-10px;width:60px;height:60px;border-radius:50%;background:var(--accent);opacity:.05;}
+.kpi-label{font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+.kpi-value{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+.kpi-badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;border-radius:4px;padding:2px 6px;margin-left:8px;}
+.kpi-badge.up{background:rgba(39,174,96,.2);color:#27ae60;}
+.kpi-badge.down{background:rgba(231,76,60,.2);color:#e74c3c;}
+.kpi-sparkline{margin-top:8px;height:30px;}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.chart-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:14px;color:var(--text);}
+.chart-wrap{position:relative;}
+.bar-list{display:flex;flex-direction:column;gap:8px;}
+.bar-item{display:flex;align-items:center;gap:8px;font-size:12px;}
+.bar-label{width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);}
+.bar-track{flex:1;height:8px;background:rgba(255,255,255,0.07);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;background:var(--accent);}
+.bar-fill.teal{background:var(--teal);}
+.bar-num{width:28px;text-align:right;color:var(--text);font-weight:500;}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+.badge.livre{background:rgba(39,174,96,.2);color:#27ae60;}
+.badge.attente{background:rgba(244,124,32,.2);color:var(--accent);}
+.badge.retour{background:rgba(231,76,60,.2);color:#e74c3c;}
+.pred-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:18px;}
+.pred-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.metrics-col{display:flex;flex-direction:column;gap:12px;}
+.metric-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;}
+.metric-icon{font-size:22px;width:44px;height:44px;background:rgba(244,124,32,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.metric-info .val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+.metric-info .lbl{font-size:11px;color:var(--muted);}
+.pred-legend{display:flex;gap:16px;margin-bottom:12px;}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
+.leg-dot{width:10px;height:10px;border-radius:2px;}
+.alert-box{border-radius:10px;padding:12px 14px;font-size:12px;display:flex;align-items:center;gap:10px;}
+.alert-box.warn{background:rgba(244,124,32,.1);border:1px solid rgba(244,124,32,.25);color:var(--accent2);}
+.alert-box.ok{background:rgba(0,200,180,.1);border:1px solid rgba(0,200,180,.25);color:var(--teal);}
+.seg-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.seg-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.seg-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.chip{border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;}
+.chip.vip{background:rgba(249,169,75,.15);border:1px solid rgba(249,169,75,.4);color:var(--accent2);}
+.chip.fidel{background:rgba(0,200,180,.15);border:1px solid rgba(0,200,180,.4);color:var(--teal);}
+.chip.new{background:rgba(41,182,246,.15);border:1px solid rgba(41,182,246,.4);color:#29b6f6;}
+.chip.risk{background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.4);color:#e74c3c;}
+.rfm-table{margin-top:12px;}
+.rfm-table table{width:100%;border-collapse:collapse;font-size:11px;}
+.rfm-table th{color:var(--muted);padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);}
+.rfm-table td{padding:7px 8px;border-bottom:1px solid var(--border);}
+.score-bar{display:flex;gap:3px;}
+.score-dot{width:8px;height:8px;border-radius:2px;background:var(--border);}
+.score-dot.on{background:var(--accent);}
+.section-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
-
-  body {
-    background: var(--navy);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    display: flex;
-  }
-
-  /* SIDEBAR */
-  .sidebar {
-    width: 200px;
-    background: var(--navy2);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 20px 0;
-    position: fixed;
-    height: 100vh;
-    z-index: 100;
-  }
-
-  .logo {
-    padding: 0 20px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 10px;
-  }
-  .logo-icon {
-    width: 34px; height: 34px;
-    background: var(--accent);
-    border-radius: 8px;
-    display:flex; align-items:center; justify-content:center;
-    font-size: 16px;
-  }
-  .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 15px; color: #fff; }
-  .logo-sub { font-size: 10px; color: var(--muted); }
-
-  .nav { padding: 16px 0; flex: 1; }
-  .nav-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 20px;
-    font-size: 13px;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all .2s;
-    border-left: 3px solid transparent;
-  }
-  .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-  .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(244,124,32,0.08); }
-  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
-
-  /* MAIN */
-  .main { margin-left: 200px; flex: 1; display: flex; flex-direction: column; }
-
-  /* TOPBAR */
-  .topbar {
-    background: var(--navy2);
-    border-bottom: 1px solid var(--border);
-    padding: 12px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .topbar h1 { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: .5px; }
-  .filters { display: flex; gap: 10px; }
-  .filter-select {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--muted);
-    font-size: 12px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    appearance: none;
-  }
-  .filter-select:focus { outline: none; border-color: var(--accent); }
-  .user-badge {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 20px; padding: 5px 12px 5px 5px;
-  }
-  .avatar {
-    width: 26px; height: 26px; border-radius: 50%;
-    background: var(--accent); display:flex; align-items:center; justify-content:center;
-    font-size: 11px; font-weight: 700;
-  }
-  .user-badge span { font-size: 12px; }
-
-  /* CONTENT */
-  .content { padding: 20px 24px; flex: 1; overflow-y: auto; }
-
-  /* PAGE VIEWS */
-  .page { display: none; }
-  .page.active { display: block; }
-
-  /* KPI ROW */
-  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
-  .kpi-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 18px;
-    position: relative;
-    overflow: hidden;
-  }
-  .kpi-card::after {
-    content:''; position:absolute; right:-10px; bottom:-10px;
-    width: 60px; height: 60px; border-radius: 50%;
-    background: var(--accent); opacity: .05;
-  }
-  .kpi-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing:.5px; }
-  .kpi-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; }
-  .kpi-badge {
-    display: inline-flex; align-items: center; gap: 3px;
-    font-size: 11px; border-radius: 4px; padding: 2px 6px; margin-left: 8px;
-  }
-  .kpi-badge.up { background: rgba(39,174,96,.2); color: #27ae60; }
-  .kpi-badge.down { background: rgba(231,76,60,.2); color: #e74c3c; }
-  .kpi-sparkline { margin-top: 8px; height: 30px; }
-  canvas.spark { width: 100% !important; height: 30px !important; }
-
-  /* CHARTS GRID */
-  .charts-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 18px; }
-  .chart-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-  }
-  .chart-card.wide { grid-column: span 2; }
-  .chart-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 14px; color: var(--text); }
-  .chart-wrap { position: relative; }
-
-  /* BAR LIST */
-  .bar-list { display: flex; flex-direction: column; gap: 8px; }
-  .bar-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-  .bar-label { width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
-  .bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.07); border-radius: 4px; overflow:hidden; }
-  .bar-fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width 1s ease; }
-  .bar-fill.teal { background: var(--teal); }
-  .bar-num { width: 28px; text-align: right; color: var(--text); font-weight: 500; }
-
-  /* TABLE */
-  .table-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 18px;
-  }
-  .table-card table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .table-card th { background: rgba(255,255,255,0.05); padding: 10px 14px; text-align: left; color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .4px; }
-  .table-card td { padding: 9px 14px; border-top: 1px solid var(--border); }
-  .table-card tr:hover td { background: rgba(255,255,255,0.03); }
-  .badge {
-    display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600;
-  }
-  .badge.livré { background: rgba(39,174,96,.2); color: #27ae60; }
-  .badge.attente { background: rgba(244,124,32,.2); color: var(--accent); }
-  .badge.retour { background: rgba(231,76,60,.2); color: #e74c3c; }
-
-  /* PREDICTION PAGE */
-  .pred-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 18px; }
-  .pred-card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px;
-  }
-  .pred-legend { display: flex; gap: 16px; margin-bottom: 12px; }
-  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
-  .leg-dot { width: 10px; height: 10px; border-radius: 2px; }
-
-  .metrics-col { display: flex; flex-direction: column; gap: 12px; }
-  .metric-box {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 14px 16px;
-    display: flex; align-items: center; gap: 14px;
-  }
-  .metric-icon { font-size: 22px; width: 44px; height: 44px; background: rgba(244,124,32,.1); border-radius: 10px; display:flex; align-items:center; justify-content:center; }
-  .metric-info .val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; }
-  .metric-info .lbl { font-size: 11px; color: var(--muted); }
-
-  .alert-box {
-    border-radius: 10px; padding: 12px 14px;
-    font-size: 12px; display: flex; align-items: center; gap: 10px;
-  }
-  .alert-box.warn { background: rgba(244,124,32,.1); border: 1px solid rgba(244,124,32,.25); color: var(--accent2); }
-  .alert-box.ok   { background: rgba(0,200,180,.1); border: 1px solid rgba(0,200,180,.25); color: var(--teal); }
-
-  /* SEGMENTATION */
-  .seg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
-  .seg-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-  .seg-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .chip {
-    border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 600; cursor: pointer;
-    transition: transform .15s;
-  }
-  .chip:hover { transform: scale(1.05); }
-  .chip.vip   { background: rgba(249,169,75,.15); border: 1px solid rgba(249,169,75,.4); color: var(--accent2); }
-  .chip.fidel { background: rgba(0,200,180,.15); border: 1px solid rgba(0,200,180,.4); color: var(--teal); }
-  .chip.new   { background: rgba(41,182,246,.15); border: 1px solid rgba(41,182,246,.4); color: #29b6f6; }
-  .chip.risk  { background: rgba(231,76,60,.15); border: 1px solid rgba(231,76,60,.4); color: #e74c3c; }
-
-  .rfm-table { margin-top: 12px; }
-  .rfm-table table { width:100%; border-collapse:collapse; font-size:11px; }
-  .rfm-table th { color: var(--muted); padding: 6px 8px; text-align:left; border-bottom: 1px solid var(--border); }
-  .rfm-table td { padding: 7px 8px; border-bottom: 1px solid var(--border); }
-  .score-bar { display:flex; gap:3px; }
-  .score-dot { width:8px; height:8px; border-radius:2px; background: var(--border); }
-  .score-dot.on { background: var(--accent); }
-
-  /* SECTION TITLE */
-  .section-label {
-    font-size: 11px; color: var(--muted); text-transform: uppercase;
-    letter-spacing: 1px; margin-bottom: 12px; display:flex; align-items:center; gap:8px;
-  }
-  .section-label::after { content:''; flex:1; height:1px; background: var(--border); }
-
-  /* ===== MOBILE ===== */
-  @media (max-width: 768px) {
-    body { flex-direction: column; }
-
-    /* Sidebar devient bottom nav */
-    .sidebar {
-      width: 100%;
-      height: 60px;
-      position: fixed;
-      bottom: 0; top: auto;
-      flex-direction: row;
-      align-items: center;
-      padding: 0;
-      border-right: none;
-      border-top: 1px solid var(--border);
-      z-index: 200;
-    }
-    .logo { display: none; }
-    .nav {
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      padding: 0;
-    }
-    .nav-item {
-      flex: 1;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 8px 4px;
-      font-size: 10px;
-      border-left: none;
-      border-top: 3px solid transparent;
-      gap: 3px;
-      text-align: center;
-    }
-    .nav-item.active {
-      border-left: none;
-      border-top: 3px solid var(--accent);
-    }
-    .nav-item .icon { font-size: 18px; width: auto; }
-
-    /* Main prend toute la largeur */
-    .main { margin-left: 0; padding-bottom: 60px; }
-
-    /* Topbar simplifié */
-    .topbar { flex-wrap: wrap; gap: 8px; padding: 10px 14px; }
-    .topbar h1 { font-size: 13px; width: 100%; }
-    .filters { display: none; }
-    .user-badge { margin-left: auto; }
-
-    /* Content padding réduit */
-    .content { padding: 12px 12px; }
-
-    /* KPI row: 2 colonnes */
-    .kpi-row { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .kpi-value { font-size: 17px; }
-
-    /* Charts: 1 colonne */
-    .charts-grid { grid-template-columns: 1fr; gap: 12px; }
-    .chart-card.wide { grid-column: span 1; }
-
-    /* Pred grid: 1 colonne */
-    .pred-grid { grid-template-columns: 1fr; }
-    .metrics-col { flex-direction: row; flex-wrap: wrap; gap: 10px; }
-    .metric-box { flex: 1; min-width: 140px; }
-
-    /* Seg grid: 1 colonne */
-    .seg-grid { grid-template-columns: 1fr; }
-
-    /* Bar labels plus courts */
-    .bar-label { width: 100px; font-size: 11px; }
-  }
+@media(max-width:768px){
+  body{flex-direction:column;}
+  .sidebar{width:100%;height:60px;position:fixed;bottom:0;top:auto;flex-direction:row;align-items:center;padding:0;border-right:none;border-top:1px solid var(--border);z-index:200;}
+  .logo{display:none;}
+  .nav{display:flex;flex-direction:row;width:100%;padding:0;}
+  .nav-item{flex:1;flex-direction:column;justify-content:center;align-items:center;padding:8px 4px;font-size:10px;border-left:none;border-top:3px solid transparent;gap:3px;text-align:center;}
+  .nav-item.active{border-left:none;border-top:3px solid var(--accent);}
+  .nav-item .icon{font-size:18px;width:auto;}
+  .main{margin-left:0;padding-bottom:60px;}
+  .topbar{padding:10px 14px;}
+  .topbar h1{font-size:13px;width:100%;}
+  .filters{display:none;}
+  .user-badge{margin-left:auto;}
+  .content{padding:12px;}
+  .kpi-row{grid-template-columns:1fr 1fr;gap:10px;}
+  .kpi-value{font-size:17px;}
+  .charts-grid{grid-template-columns:1fr;gap:12px;}
+  .pred-grid{grid-template-columns:1fr;}
+  .metrics-col{flex-direction:row;flex-wrap:wrap;}
+  .metric-box{flex:1;min-width:140px;}
+  .seg-grid{grid-template-columns:1fr;}
+  .bar-label{width:100px;font-size:11px;}
+}
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <nav class="sidebar">
   <div class="logo">
     <div class="logo-icon">🛍</div>
-    <div>
-      <div class="logo-text">SOUGUI</div>
-      <div class="logo-sub">E-SHOP ANALYTICS</div>
-    </div>
+    <div><div class="logo-text">SOUGUI</div><div class="logo-sub">E-SHOP ANALYTICS</div></div>
   </div>
   <div class="nav">
-    <div class="nav-item" onclick="showPage('accueil')"><span class="icon">🏠</span> Accueil</div>
-    <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard"><span class="icon">📊</span> Dashboard</div>
-    <div class="nav-item" onclick="showPage('predictions')" id="nav-predictions"><span class="icon">🔮</span> Prédictions</div>
-    <div class="nav-item" onclick="showPage('segmentation')" id="nav-segmentation"><span class="icon">🎯</span> Segmentation</div>
-    <div class="nav-item" onclick="showPage('settings')" id="nav-settings"><span class="icon">⚙️</span> Paramètres</div>
+    <div class="nav-item" id="nav-accueil" onclick="showPage('accueil')"><span class="icon">🏠</span> Accueil</div>
+    <div class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard')"><span class="icon">📊</span> Dashboard</div>
+    <div class="nav-item" id="nav-predictions" onclick="showPage('predictions')"><span class="icon">🔮</span> Prédictions</div>
+    <div class="nav-item" id="nav-segmentation" onclick="showPage('segmentation')"><span class="icon">🎯</span> Segmentation</div>
+    <div class="nav-item" id="nav-settings" onclick="showPage('settings')"><span class="icon">⚙️</span> Paramètres</div>
   </div>
 </nav>
 
-<!-- MAIN -->
 <div class="main">
   <header class="topbar">
     <h1>SOUGUI DASHBOARD DES VENTES</h1>
@@ -344,424 +142,290 @@
       <select class="filter-select"><option>Produit : Tous</option><option>Coffrets</option><option>Bougies</option></select>
       <select class="filter-select"><option>Fournisseur : Tous</option></select>
     </div>
-    <div class="user-badge">
-      <div class="avatar">AK</div>
-      <span>Amori K.</span>
-    </div>
+    <div class="user-badge"><div class="avatar">AK</div><span>Amori K.</span></div>
   </header>
 
   <div class="content">
 
-    <!-- ===== DASHBOARD PAGE ===== -->
+    <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
-
-      <!-- KPIs -->
       <div class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-label">YTD Ventes</div>
-          <div class="kpi-value">45,25K <span class="kpi-badge down">▼ -0.81%</span></div>
-          <div class="kpi-sparkline"><canvas id="spark1" class="spark"></canvas></div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">YTD Profit</div>
-          <div class="kpi-value">12K <span class="kpi-badge up">▲ 4.21%</span></div>
-          <div class="kpi-sparkline"><canvas id="spark2" class="spark"></canvas></div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Variation CA</div>
-          <div class="kpi-value">+8.21% <span style="font-size:18px">▲</span></div>
-          <div class="kpi-sparkline"><canvas id="spark3" class="spark"></canvas></div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Panier Moyen</div>
-          <div class="kpi-value">128 <span style="font-size:13px;color:var(--muted)">TND</span></div>
-          <div class="kpi-sparkline"><canvas id="spark4" class="spark"></canvas></div>
-        </div>
+        <div class="kpi-card"><div class="kpi-label">YTD Ventes</div><div class="kpi-value">45,25K <span class="kpi-badge down">▼ -0.81%</span></div><div class="kpi-sparkline"><canvas id="spark1"></canvas></div></div>
+        <div class="kpi-card"><div class="kpi-label">YTD Profit</div><div class="kpi-value">12K <span class="kpi-badge up">▲ 4.21%</span></div><div class="kpi-sparkline"><canvas id="spark2"></canvas></div></div>
+        <div class="kpi-card"><div class="kpi-label">Variation CA</div><div class="kpi-value">+8.21% ▲</div><div class="kpi-sparkline"><canvas id="spark3"></canvas></div></div>
+        <div class="kpi-card"><div class="kpi-label">Panier Moyen</div><div class="kpi-value">128 <span style="font-size:13px;color:var(--muted)">TND</span></div><div class="kpi-sparkline"><canvas id="spark4"></canvas></div></div>
       </div>
-
-      <!-- CHARTS ROW 1 -->
       <div class="charts-grid">
-
-        <!-- Top 5 Products -->
         <div class="chart-card">
           <div class="chart-title">Top 5 Produits par Ventes</div>
           <div class="bar-list">
-            <div class="bar-item"><span class="bar-label">Set "Cœur à Cœur"</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-num">160</span></div>
+            <div class="bar-item"><span class="bar-label">Set "Coeur a Coeur"</span><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><span class="bar-num">160</span></div>
             <div class="bar-item"><span class="bar-label">Carafe et 6 Gobelets</span><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div><span class="bar-num">136</span></div>
-            <div class="bar-item"><span class="bar-label">Jeu Nes Bekri Kal...</span><div class="bar-track"><div class="bar-fill" style="width:83%"></div></div><span class="bar-num">133</span></div>
+            <div class="bar-item"><span class="bar-label">Jeu Nes Bekri Kal.</span><div class="bar-track"><div class="bar-fill" style="width:83%"></div></div><span class="bar-num">133</span></div>
             <div class="bar-item"><span class="bar-label">Couffin artisanal</span><div class="bar-track"><div class="bar-fill" style="width:75%"></div></div><span class="bar-num">120</span></div>
-            <div class="bar-item"><span class="bar-label">Bonbonnières en...</span><div class="bar-track"><div class="bar-fill" style="width:45%"></div></div><span class="bar-num">72</span></div>
+            <div class="bar-item"><span class="bar-label">Bonbonnieres en...</span><div class="bar-track"><div class="bar-fill" style="width:45%"></div></div><span class="bar-num">72</span></div>
           </div>
         </div>
-
-        <!-- Ventes par Région -->
         <div class="chart-card">
-          <div class="chart-title">YTD Ventes par Région</div>
-          <div class="chart-wrap" style="height:160px">
-            <canvas id="chartRegion"></canvas>
-          </div>
+          <div class="chart-title">YTD Ventes par Region</div>
+          <div class="chart-wrap" style="height:160px"><canvas id="chartRegion"></canvas></div>
         </div>
-
-        <!-- CA par Mois -->
         <div class="chart-card">
           <div class="chart-title">CA par Mois</div>
-          <div class="chart-wrap" style="height:160px">
-            <canvas id="chartCA"></canvas>
-          </div>
+          <div class="chart-wrap" style="height:160px"><canvas id="chartCA"></canvas></div>
         </div>
-
       </div>
-
-      <!-- CHARTS ROW 2 -->
       <div class="charts-grid">
-
-        <!-- Bottom 5 Products -->
         <div class="chart-card">
           <div class="chart-title">Bottom 5 Produits par Ventes</div>
           <div class="bar-list">
-            <div class="bar-item"><span class="bar-label">Plateau décoratif Zellige</span><div class="bar-track"><div class="bar-fill teal" style="width:35%"></div></div><span class="bar-num">18</span></div>
-            <div class="bar-item"><span class="bar-label">Savon au lait de chèvre</span><div class="bar-track"><div class="bar-fill teal" style="width:40%"></div></div><span class="bar-num">22</span></div>
-            <div class="bar-item"><span class="bar-label">Coussin brodé main</span><div class="bar-track"><div class="bar-fill teal" style="width:48%"></div></div><span class="bar-num">28</span></div>
-            <div class="bar-item"><span class="bar-label">Tapis Berbère mini</span><div class="bar-track"><div class="bar-fill teal" style="width:55%"></div></div><span class="bar-num">34</span></div>
+            <div class="bar-item"><span class="bar-label">Plateau Zellige</span><div class="bar-track"><div class="bar-fill teal" style="width:35%"></div></div><span class="bar-num">18</span></div>
+            <div class="bar-item"><span class="bar-label">Savon lait chevre</span><div class="bar-track"><div class="bar-fill teal" style="width:40%"></div></div><span class="bar-num">22</span></div>
+            <div class="bar-item"><span class="bar-label">Coussin brode main</span><div class="bar-track"><div class="bar-fill teal" style="width:48%"></div></div><span class="bar-num">28</span></div>
+            <div class="bar-item"><span class="bar-label">Tapis Berbere mini</span><div class="bar-track"><div class="bar-fill teal" style="width:55%"></div></div><span class="bar-num">34</span></div>
             <div class="bar-item"><span class="bar-label">Porte-bougie laiton</span><div class="bar-track"><div class="bar-fill teal" style="width:60%"></div></div><span class="bar-num">39</span></div>
           </div>
         </div>
-
-        <!-- Ventes par Catégorie -->
         <div class="chart-card">
-          <div class="chart-title">YTD Ventes par Catégorie</div>
-          <div class="chart-wrap" style="height:160px">
-            <canvas id="chartCat"></canvas>
-          </div>
+          <div class="chart-title">YTD Ventes par Categorie</div>
+          <div class="chart-wrap" style="height:160px"><canvas id="chartCat"></canvas></div>
         </div>
-
-        <!-- Retours récents -->
         <div class="chart-card">
-          <div class="chart-title">Retours & Remboursements</div>
-          <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Dernières entrées</div>
+          <div class="chart-title">Retours &amp; Remboursements</div>
           <table style="width:100%;font-size:11px;border-collapse:collapse">
-            <tr style="color:var(--muted)"><th style="padding:4px 0;text-align:left">UGS</th><th>Prénom</th><th>Qté</th><th>Motif</th></tr>
+            <tr style="color:var(--muted)"><th style="padding:4px 0;text-align:left">UGS</th><th>Prenom</th><th>Qte</th><th>Statut</th></tr>
             <tr><td style="padding:5px 0">BCL-007-RL</td><td>Amori</td><td>1</td><td><span class="badge retour">Retour</span></td></tr>
             <tr><td>BON-VS-ML</td><td>Cyrine</td><td>1</td><td><span class="badge attente">Attente</span></td></tr>
-            <tr><td>BON-VS-ML</td><td>Dina</td><td>1</td><td><span class="badge livré">Livré</span></td></tr>
-            <tr><td>SET-CCC-01</td><td>Sarra</td><td>2</td><td><span class="badge livré">Livré</span></td></tr>
+            <tr><td>BON-VS-ML</td><td>Dina</td><td>1</td><td><span class="badge livre">Livre</span></td></tr>
+            <tr><td>SET-CCC-01</td><td>Sarra</td><td>2</td><td><span class="badge livre">Livre</span></td></tr>
           </table>
         </div>
-
       </div>
+    </div>
 
-    </div><!-- /dashboard -->
-
-
-    <!-- ===== PREDICTIONS PAGE ===== -->
+    <!-- PREDICTIONS -->
     <div class="page" id="page-predictions">
-
-      <div class="section-label">IA Prévisions & Recommandations</div>
-
+      <div class="section-label">IA Previsions &amp; Recommandations</div>
       <div class="pred-grid">
-
-        <!-- Forecast Chart -->
         <div class="pred-card">
-          <div class="chart-title">Prévision des Ventes — Prochains 6 Mois</div>
+          <div class="chart-title">Prevision des Ventes - Prochains 6 Mois</div>
           <div class="pred-legend">
             <div class="leg-item"><div class="leg-dot" style="background:var(--accent)"></div> Actual</div>
-            <div class="leg-item"><div class="leg-dot" style="background:var(--teal);border:1px dashed var(--teal)"></div> Prédit</div>
+            <div class="leg-item"><div class="leg-dot" style="background:var(--teal)"></div> Predit</div>
           </div>
-          <div class="chart-wrap" style="height:200px">
-            <canvas id="chartForecast"></canvas>
-          </div>
+          <div class="chart-wrap" style="height:200px"><canvas id="chartForecast"></canvas></div>
         </div>
-
-        <!-- Metrics -->
         <div class="metrics-col">
-          <div class="metric-box">
-            <div class="metric-icon">📈</div>
-            <div class="metric-info">
-              <div class="val">+14.2%</div>
-              <div class="lbl">Croissance prévue CA</div>
-            </div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-icon">🎯</div>
-            <div class="metric-info">
-              <div class="val">87%</div>
-              <div class="lbl">Précision du modèle</div>
-            </div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-icon">📦</div>
-            <div class="metric-info">
-              <div class="val">3 produits</div>
-              <div class="lbl">En risque de rupture</div>
-            </div>
-          </div>
+          <div class="metric-box"><div class="metric-icon">📈</div><div class="metric-info"><div class="val">+14.2%</div><div class="lbl">Croissance prevue CA</div></div></div>
+          <div class="metric-box"><div class="metric-icon">🎯</div><div class="metric-info"><div class="val">87%</div><div class="lbl">Precision du modele</div></div></div>
+          <div class="metric-box"><div class="metric-icon">📦</div><div class="metric-info"><div class="val">3 produits</div><div class="lbl">En risque de rupture</div></div></div>
         </div>
-
       </div>
-
-      <!-- Alerts -->
-      <div class="section-label">Alertes Prédictives</div>
-      <div style="display:flex;flex-direction:column;gap:10px;max-width:700px">
-        <div class="alert-box warn">⚠️ <div><strong>Rupture de stock prévue</strong> — "Set Cœur à Cœur" : stock estimé épuisé dans <strong>12 jours</strong>. Commander au fournisseur avant le 10 Avril.</div></div>
-        <div class="alert-box warn">⚠️ <div><strong>Baisse de demande détectée</strong> — "Plateau Zellige" : tendance à -22% ce mois. Envisager une promotion ciblée.</div></div>
-        <div class="alert-box ok">✅ <div><strong>Pic saisonnier détecté</strong> — Période fêtes (Juin–Juillet) : hausse prévue de <strong>+31%</strong> sur les coffrets cadeaux. Anticiper le stock.</div></div>
-        <div class="alert-box ok">✅ <div><strong>Modèle mis à jour</strong> — Réentraînement réussi avec les données de Mars 2026. RMSE : 0.082.</div></div>
+      <div class="section-label">Alertes Predictives</div>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:700px;margin-bottom:20px">
+        <div class="alert-box warn">&#9888;&#65039; <div><strong>Rupture prevue</strong> - "Set Coeur a Coeur" epuise dans <strong>12 jours</strong>. Commander avant le 10 Avril.</div></div>
+        <div class="alert-box warn">&#9888;&#65039; <div><strong>Baisse de demande</strong> - "Plateau Zellige" : tendance a -22% ce mois.</div></div>
+        <div class="alert-box ok">&#9989; <div><strong>Pic saisonnier</strong> - Juin-Juillet : +31% prevu sur les coffrets cadeaux.</div></div>
+        <div class="alert-box ok">&#9989; <div><strong>Modele mis a jour</strong> - Reentrainement Mars 2026 reussi. RMSE : 0.082.</div></div>
       </div>
-
-      <!-- Demand per Product -->
-      <div class="section-label" style="margin-top:20px">Demande Prévue par Produit</div>
+      <div class="section-label">Demande Prevue par Produit - Avril 2026</div>
       <div class="chart-card" style="max-width:700px">
-        <div class="chart-title">Unités prévues — Avril 2026</div>
         <div class="bar-list">
-          <div class="bar-item"><span class="bar-label">Set "Cœur à Cœur"</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><span class="bar-num">184</span></div>
+          <div class="bar-item"><span class="bar-label">Set Coeur a Coeur</span><div class="bar-track"><div class="bar-fill" style="width:92%"></div></div><span class="bar-num">184</span></div>
           <div class="bar-item"><span class="bar-label">Carafe et 6 Gobelets</span><div class="bar-track"><div class="bar-fill" style="width:78%"></div></div><span class="bar-num">156</span></div>
           <div class="bar-item"><span class="bar-label">Couffin artisanal</span><div class="bar-track"><div class="bar-fill" style="width:65%"></div></div><span class="bar-num">130</span></div>
-          <div class="bar-item"><span class="bar-label">Bonbonnières en verre</span><div class="bar-track"><div class="bar-fill" style="width:42%"></div></div><span class="bar-num">84</span></div>
+          <div class="bar-item"><span class="bar-label">Bonbonnieres verre</span><div class="bar-track"><div class="bar-fill" style="width:42%"></div></div><span class="bar-num">84</span></div>
           <div class="bar-item"><span class="bar-label">Plateau Zellige</span><div class="bar-track"><div class="bar-fill teal" style="width:22%"></div></div><span class="bar-num">44</span></div>
         </div>
       </div>
+    </div>
 
-    </div><!-- /predictions -->
-
-
-    <!-- ===== SEGMENTATION PAGE ===== -->
+    <!-- SEGMENTATION -->
     <div class="page" id="page-segmentation">
-
-      <div class="section-label">Segmentation Clients — Analyse RFM</div>
-
-      <div class="kpi-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="section-label">Segmentation Clients - Analyse RFM</div>
+      <div class="kpi-row">
         <div class="kpi-card"><div class="kpi-label">Clients Totaux</div><div class="kpi-value">1 248</div></div>
         <div class="kpi-card"><div class="kpi-label">Clients VIP</div><div class="kpi-value" style="color:var(--accent2)">87</div></div>
-        <div class="kpi-card"><div class="kpi-label">Taux de fidélité</div><div class="kpi-value">62%</div></div>
-        <div class="kpi-card"><div class="kpi-label">Clients à risque</div><div class="kpi-value" style="color:#e74c3c">143</div></div>
+        <div class="kpi-card"><div class="kpi-label">Taux de fidelite</div><div class="kpi-value">62%</div></div>
+        <div class="kpi-card"><div class="kpi-label">Clients a risque</div><div class="kpi-value" style="color:#e74c3c">143</div></div>
       </div>
-
       <div class="seg-grid">
-
-        <!-- Répartition segments -->
         <div class="seg-card">
-          <div class="chart-title">Répartition des Segments</div>
-          <div class="chart-wrap" style="height:200px">
-            <canvas id="chartSeg"></canvas>
-          </div>
+          <div class="chart-title">Repartition des Segments</div>
+          <div class="chart-wrap" style="height:200px"><canvas id="chartSeg"></canvas></div>
           <div class="seg-chips">
-            <span class="chip vip">🏆 VIP (7%)</span>
-            <span class="chip fidel">💚 Fidèles (28%)</span>
-            <span class="chip new">🆕 Nouveaux (18%)</span>
-            <span class="chip risk">⚠️ À risque (11%)</span>
+            <span class="chip vip">VIP (7%)</span>
+            <span class="chip fidel">Fideles (28%)</span>
+            <span class="chip new">Nouveaux (18%)</span>
+            <span class="chip risk">A risque (11%)</span>
           </div>
         </div>
-
-        <!-- RFM Table -->
         <div class="seg-card">
           <div class="chart-title">Scores RFM par Segment</div>
           <div class="rfm-table">
             <table>
-              <thead><tr><th>Segment</th><th>Récence</th><th>Fréquence</th><th>Montant</th><th>Score</th></tr></thead>
+              <thead><tr><th>Segment</th><th>R</th><th>F</th><th>M</th><th>Score</th></tr></thead>
               <tbody>
-                <tr>
-                  <td><span class="chip vip" style="padding:2px 8px">VIP</span></td>
-                  <td>5</td><td>5</td><td>5</td>
-                  <td><div class="score-bar">
-                    <div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div>
-                  </div></td>
-                </tr>
-                <tr>
-                  <td><span class="chip fidel" style="padding:2px 8px">Fidèles</span></td>
-                  <td>4</td><td>4</td><td>3</td>
-                  <td><div class="score-bar">
-                    <div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot"></div>
-                  </div></td>
-                </tr>
-                <tr>
-                  <td><span class="chip new" style="padding:2px 8px">Nouveaux</span></td>
-                  <td>5</td><td>1</td><td>2</td>
-                  <td><div class="score-bar">
-                    <div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot"></div><div class="score-dot"></div>
-                  </div></td>
-                </tr>
-                <tr>
-                  <td><span class="chip risk" style="padding:2px 8px">À risque</span></td>
-                  <td>2</td><td>2</td><td>3</td>
-                  <td><div class="score-bar">
-                    <div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot"></div><div class="score-dot"></div><div class="score-dot"></div>
-                  </div></td>
-                </tr>
+                <tr><td><span class="chip vip" style="padding:2px 8px">VIP</span></td><td>5</td><td>5</td><td>5</td><td><div class="score-bar"><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div></div></td></tr>
+                <tr><td><span class="chip fidel" style="padding:2px 8px">Fideles</span></td><td>4</td><td>4</td><td>3</td><td><div class="score-bar"><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot"></div></div></td></tr>
+                <tr><td><span class="chip new" style="padding:2px 8px">Nouveaux</span></td><td>5</td><td>1</td><td>2</td><td><div class="score-bar"><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot"></div><div class="score-dot"></div></div></td></tr>
+                <tr><td><span class="chip risk" style="padding:2px 8px">A risque</span></td><td>2</td><td>2</td><td>3</td><td><div class="score-bar"><div class="score-dot on"></div><div class="score-dot on"></div><div class="score-dot"></div><div class="score-dot"></div><div class="score-dot"></div></div></td></tr>
               </tbody>
             </table>
           </div>
         </div>
-
-        <!-- Comportement -->
         <div class="seg-card">
           <div class="chart-title">Panier Moyen par Segment</div>
-          <div class="chart-wrap" style="height:180px">
-            <canvas id="chartBasket"></canvas>
-          </div>
+          <div class="chart-wrap" style="height:180px"><canvas id="chartBasket"></canvas></div>
         </div>
-
-        <!-- Recommendations -->
         <div class="seg-card">
-          <div class="chart-title">Actions Recommandées</div>
+          <div class="chart-title">Actions Recommandees</div>
           <div style="display:flex;flex-direction:column;gap:9px;margin-top:4px;font-size:12px">
-            <div class="alert-box ok">🏆 <div><strong>VIP</strong> — Envoyer offre exclusive avant Ramadan. Conversion estimée : +40%.</div></div>
-            <div class="alert-box ok">💚 <div><strong>Fidèles</strong> — Programme fidélité : récompenser après 5 achats.</div></div>
-            <div style="background:rgba(41,182,246,.08);border:1px solid rgba(41,182,246,.2);border-radius:10px;padding:10px 12px;color:#29b6f6">🆕 <strong>Nouveaux</strong> — Email de bienvenue + code promo -10% sur 2e achat.</div>
-            <div class="alert-box warn">⚠️ <div><strong>À risque</strong> — Relance SMS : "Vous nous manquez ! -15% ce weekend."</div></div>
+            <div class="alert-box ok"><div><strong>VIP</strong> - Offre exclusive avant Ramadan. Conversion estimee : +40%.</div></div>
+            <div class="alert-box ok"><div><strong>Fideles</strong> - Programme fidelite : recompenser apres 5 achats.</div></div>
+            <div style="background:rgba(41,182,246,.08);border:1px solid rgba(41,182,246,.2);border-radius:10px;padding:10px 12px;color:#29b6f6"><strong>Nouveaux</strong> - Email de bienvenue + code promo -10% sur 2e achat.</div>
+            <div class="alert-box warn"><div><strong>A risque</strong> - Relance SMS : -15% ce weekend.</div></div>
           </div>
         </div>
-
       </div>
+    </div>
 
-    </div><!-- /segmentation -->
-
-    <!-- ===== ACCUEIL PAGE ===== -->
+    <!-- ACCUEIL -->
     <div class="page" id="page-accueil">
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;gap:16px">
         <div style="font-size:52px">🛍️</div>
         <h2 style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800">Bienvenue sur Sougui E-Shop Analytics</h2>
-        <p style="color:var(--muted);max-width:420px;line-height:1.7">Une plateforme unifiée pour centraliser vos données, visualiser vos performances et anticiper vos décisions grâce à l'IA.</p>
-        <div style="display:flex;gap:12px;margin-top:8px">
+        <p style="color:var(--muted);max-width:420px;line-height:1.7">Une plateforme unifiee pour centraliser vos donnees, visualiser vos performances et anticiper vos decisions grace a l'IA.</p>
+        <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;justify-content:center">
           <button onclick="showPage('dashboard')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600">Voir le Dashboard</button>
-          <button onclick="showPage('predictions')" style="background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px 22px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Prédictions IA</button>
+          <button onclick="showPage('predictions')" style="background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px 22px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif">Predictions IA</button>
         </div>
       </div>
     </div>
 
-    <!-- ===== SETTINGS PAGE ===== -->
+    <!-- SETTINGS -->
     <div class="page" id="page-settings">
       <div style="max-width:500px;padding-top:20px">
-        <div class="section-label">Paramètres</div>
-        <div class="pred-card" style="display:flex;flex-direction:column;gap:14px">
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
-            <span>Notifications par email</span>
-            <div style="width:38px;height:20px;background:var(--accent);border-radius:10px;cursor:pointer;position:relative"><div style="position:absolute;right:3px;top:3px;width:14px;height:14px;background:#fff;border-radius:50%"></div></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
-            <span>Alertes de rupture de stock</span>
-            <div style="width:38px;height:20px;background:var(--accent);border-radius:10px;cursor:pointer;position:relative"><div style="position:absolute;right:3px;top:3px;width:14px;height:14px;background:#fff;border-radius:50%"></div></div>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
-            <span>Réentraînement auto du modèle IA</span>
-            <div style="width:38px;height:20px;background:var(--border);border-radius:10px;cursor:pointer;position:relative"><div style="position:absolute;left:3px;top:3px;width:14px;height:14px;background:var(--muted);border-radius:50%"></div></div>
-          </div>
-          <div style="font-size:12px;color:var(--muted);margin-top:4px">Version de l'app : 1.0.0 — <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0b6864657f6a687f4b78647e6c7e62257f65">[email&#160;protected]</a></div>
+        <div class="section-label">Parametres</div>
+        <div class="pred-card" style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>Notifications par email</span><div style="width:38px;height:20px;background:var(--accent);border-radius:10px;position:relative"><div style="position:absolute;right:3px;top:3px;width:14px;height:14px;background:#fff;border-radius:50%"></div></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>Alertes de rupture de stock</span><div style="width:38px;height:20px;background:var(--accent);border-radius:10px;position:relative"><div style="position:absolute;right:3px;top:3px;width:14px;height:14px;background:#fff;border-radius:50%"></div></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>Reentrainement auto du modele IA</span><div style="width:38px;height:20px;background:var(--border);border-radius:10px;position:relative"><div style="position:absolute;left:3px;top:3px;width:14px;height:14px;background:var(--muted);border-radius:50%"></div></div></div>
+          <div style="font-size:12px;color:var(--muted)">Version 1.0.0 - contact@sougui.tn</div>
         </div>
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
+  </div>
+</div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ---- Navigation ----
+<script>
+const chartsReady = {};
+
 function showPage(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
-  const nav = document.getElementById('nav-' + name);
-  if (nav) nav.classList.add('active');
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var page = document.getElementById('page-' + name);
+  var nav  = document.getElementById('nav-' + name);
+  if (page) page.classList.add('active');
+  if (nav)  nav.classList.add('active');
+  if (!chartsReady[name]) {
+    chartsReady[name] = true;
+    setTimeout(function(){
+      if (name === 'predictions')  initPredCharts();
+      if (name === 'segmentation') initSegCharts();
+    }, 80);
+  }
+  window.scrollTo(0, 0);
 }
 
-// ---- Sparklines ----
-function sparkline(id, data, color) {
-  const ctx = document.getElementById(id).getContext('2d');
-  new Chart(ctx, {
+function mkSpark(id, data, color) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  new Chart(el, {
     type: 'line',
-    data: {
-      labels: data.map((_,i)=>i),
-      datasets: [{ data, borderColor: color, borderWidth: 1.5, pointRadius: 0, fill: true,
-        backgroundColor: color + '22', tension: 0.4 }]
-    },
-    options: { animation: false, plugins: { legend: { display:false } },
-      scales: { x: { display:false }, y: { display:false } },
-      responsive: true, maintainAspectRatio: false }
+    data: { labels: data.map(function(_,i){return i;}), datasets: [{ data: data, borderColor: color, borderWidth: 1.5, pointRadius: 0, fill: true, backgroundColor: color+'22', tension: 0.4 }] },
+    options: { animation:false, plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:false}}, responsive:true, maintainAspectRatio:false }
   });
 }
-sparkline('spark1', [42,38,45,41,44,40,42,45], '#e74c3c');
-sparkline('spark2', [10,11,10.5,12,11.5,12,11.8,12.2], '#27ae60');
-sparkline('spark3', [6,7,7.5,7,8,8.2,8.1,8.21], '#f47c20');
-sparkline('spark4', [120,125,118,130,128,132,125,128], '#00c8b4');
 
-const OPTS = (legend=false) => ({
-  responsive: true, maintainAspectRatio: false,
-  plugins: { legend: { display: legend, position: 'right',
-    labels: { color:'#8fa0c0', font:{ size:11 }, boxWidth:10 } } },
-  scales: { x: { ticks:{color:'#8fa0c0',font:{size:10}}, grid:{color:'rgba(255,255,255,0.05)'} },
-            y: { ticks:{color:'#8fa0c0',font:{size:10}}, grid:{color:'rgba(255,255,255,0.05)'} } }
+var OPTS = function(legend) {
+  return {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: !!legend, position: 'right', labels: { color:'#8fa0c0', font:{size:10}, boxWidth:8 } } },
+    scales: {
+      x: { ticks:{color:'#8fa0c0',font:{size:10}}, grid:{color:'rgba(255,255,255,0.05)'} },
+      y: { ticks:{color:'#8fa0c0',font:{size:10}}, grid:{color:'rgba(255,255,255,0.05)'} }
+    }
+  };
+};
+
+window.addEventListener('DOMContentLoaded', function() {
+  mkSpark('spark1', [42,38,45,41,44,40,42,45], '#e74c3c');
+  mkSpark('spark2', [10,11,10.5,12,11.5,12,11.8,12.2], '#27ae60');
+  mkSpark('spark3', [6,7,7.5,7,8,8.2,8.1,8.21], '#f47c20');
+  mkSpark('spark4', [120,125,118,130,128,132,125,128], '#00c8b4');
+
+  new Chart(document.getElementById('chartCA'), {
+    type: 'bar',
+    data: {
+      labels: ['Jan','Fev','Mar','Avr','Mai','Jun','Jul','Aou','Sep','Oct','Nov','Dec'],
+      datasets: [{ data:[3200,2900,3800,4100,3600,4500,4800,3900,4200,4000,4600,5100],
+        backgroundColor: ['#1a3a6b','#1a3a6b','#1a3a6b','#1a3a6b','#1a3a6b','#1a3a6b','#1a3a6b','#1a3a6b','#1a3a6b','#f47c20','#f47c20','#f47c20'],
+        borderRadius: 4 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#8fa0c0',font:{size:9}},grid:{color:'rgba(255,255,255,0.05)'}}, y:{ticks:{color:'#8fa0c0',font:{size:9}},grid:{color:'rgba(255,255,255,0.05)'}} } }
+  });
+
+  new Chart(document.getElementById('chartRegion'), {
+    type: 'doughnut',
+    data: { labels:['Tunis','Ariana','QR Code','Nabeul','Bizerte'], datasets:[{ data:[38,22,15,14,11], backgroundColor:['#f47c20','#00c8b4','#29b6f6','#9c27b0','#e74c3c'], borderWidth:0, hoverOffset:6 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:true, position:'right', labels:{color:'#8fa0c0',font:{size:10},boxWidth:8} } } }
+  });
+
+  new Chart(document.getElementById('chartCat'), {
+    type: 'doughnut',
+    data: { labels:['Bonbonnieres','Service table','Coffret cadeau','Bois olive','Bourse'], datasets:[{ data:[32,24,18,14,12], backgroundColor:['#f47c20','#00c8b4','#29b6f6','#fdd835','#e74c3c'], borderWidth:0, hoverOffset:6 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:true, position:'right', labels:{color:'#8fa0c0',font:{size:10},boxWidth:8} } } }
+  });
+
+  chartsReady['dashboard'] = true;
 });
 
-// CA par Mois
-new Chart(document.getElementById('chartCA').getContext('2d'), {
-  type: 'bar',
-  data: {
-    labels: ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'],
-    datasets: [{ data:[3200,2900,3800,4100,3600,4500,4800,3900,4200,4000,4600,5100],
-      backgroundColor: (ctx) => ctx.dataIndex >= 9 ? '#f47c20' : '#1a3a6b',
-      borderRadius: 4 }]
-  },
-  options: { ...OPTS(), plugins: { legend: { display:false } } }
-});
+function initPredCharts() {
+  var el = document.getElementById('chartForecast');
+  if (!el) return;
+  new Chart(el, {
+    type: 'line',
+    data: {
+      labels: ['Oct','Nov','Dec','Jan','Fev','Mar','Avr','Mai','Jun','Jul','Aou','Sep'],
+      datasets: [
+        { label:'Actual', data:[3900,4200,5100,3200,2900,3800,null,null,null,null,null,null], borderColor:'#f47c20', borderWidth:2, pointRadius:3, fill:false, tension:.4, backgroundColor:'#f47c20' },
+        { label:'Predit',  data:[null,null,null,null,null,3800,4300,4700,5500,5900,5100,5400], borderColor:'#00c8b4', borderWidth:2, borderDash:[5,4], pointRadius:3, fill:false, tension:.4, backgroundColor:'#00c8b4' }
+      ]
+    },
+    options: OPTS(true)
+  });
+}
 
-// Région (donut)
-new Chart(document.getElementById('chartRegion').getContext('2d'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Tunis','Ariana','QR Code','Nabeul','Bizerte'],
-    datasets: [{ data:[38,22,15,14,11],
-      backgroundColor:['#f47c20','#00c8b4','#29b6f6','#9c27b0','#e74c3c'],
-      borderWidth:0, hoverOffset:6 }]
-  },
-  options: { responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{ display:true, position:'right', labels:{color:'#8fa0c0',font:{size:10},boxWidth:8} } } }
-});
-
-// Catégorie (donut)
-new Chart(document.getElementById('chartCat').getContext('2d'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Bonbonnières','Service de table','Coffret cadeau','Bois d\'olive','Bourse'],
-    datasets: [{ data:[32,24,18,14,12],
-      backgroundColor:['#f47c20','#00c8b4','#29b6f6','#fdd835','#e74c3c'],
-      borderWidth:0, hoverOffset:6 }]
-  },
-  options: { responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{ display:true, position:'right', labels:{color:'#8fa0c0',font:{size:10},boxWidth:8} } } }
-});
-
-// Forecast
-new Chart(document.getElementById('chartForecast').getContext('2d'), {
-  type: 'line',
-  data: {
-    labels: ['Oct','Nov','Déc','Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep'],
-    datasets: [
-      { label:'Actual', data:[3900,4200,5100,3200,2900,3800,null,null,null,null,null,null],
-        borderColor:'#f47c20', borderWidth:2, pointRadius:3, fill:false, tension:.4,
-        backgroundColor:'#f47c20' },
-      { label:'Prédit', data:[null,null,null,null,null,3800,4300,4700,5500,5900,5100,5400],
-        borderColor:'#00c8b4', borderWidth:2, borderDash:[5,4], pointRadius:3, fill:false, tension:.4,
-        backgroundColor:'#00c8b4' }
-    ]
-  },
-  options: { ...OPTS(true) }
-});
-
-// Segments donut
-new Chart(document.getElementById('chartSeg').getContext('2d'), {
-  type: 'doughnut',
-  data: {
-    labels: ['VIP','Fidèles','Nouveaux','À risque','Occasionnels'],
-    datasets:[{ data:[7,28,18,11,36],
-      backgroundColor:['#f9a94b','#00c8b4','#29b6f6','#e74c3c','#5c6bc0'],
-      borderWidth:0, hoverOffset:8 }]
-  },
-  options:{ responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{ display:true, position:'right', labels:{color:'#8fa0c0',font:{size:10},boxWidth:8} } } }
-});
-
-// Panier moyen bar
-new Chart(document.getElementById('chartBasket').getContext('2d'), {
-  type:'bar',
-  data:{
-    labels:['VIP','Fidèles','Nouveaux','À risque','Occasion.'],
-    datase
+function initSegCharts() {
+  var elSeg = document.getElementById('chartSeg');
+  if (elSeg) {
+    new Chart(elSeg, {
+      type: 'doughnut',
+      data: { labels:['VIP','Fideles','Nouveaux','A risque','Occasionnels'], datasets:[{ data:[7,28,18,11,36], backgroundColor:['#f9a94b','#00c8b4','#29b6f6','#e74c3c','#5c6bc0'], borderWidth:0, hoverOffset:8 }] },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:true, position:'right', labels:{color:'#8fa0c0',font:{size:10},boxWidth:8} } } }
+    });
+  }
+  var elBasket = document.getElementById('chartBasket');
+  if (elBasket) {
+    new Chart(elBasket, {
+      type: 'bar',
+      data: { labels:['VIP','Fideles','Nouveaux','A risque','Occasion.'], datasets:[{ data:[380,195,88,120,65], backgroundColor:['#f9a94b','#00c8b4','#29b6f6','#e74c3c','#5c6bc0'], borderRadius:5 }] },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#8fa0c0',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}}, y:{ticks:{color:'#8fa0c0',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}} } }
+    });
+  }
+}
+</script>
+</body>
+</html>
